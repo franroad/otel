@@ -1,0 +1,1 @@
+remember to -c "your mail configured " in ##git config --list when creating the ssh key
