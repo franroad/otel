@@ -4,6 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-app-beyla-trace
+  namespace: beyla
 spec:
   replicas: 1
   selector:
@@ -18,7 +19,7 @@ spec:
       shareProcessNamespace: true
       containers:
       - name: frontend-app-beyla-container
-        image: http-out:2
+        image: http-web:minikube #http-out:2
         imagePullPolicy: Never
         ports:
         - containerPort: 8081
@@ -56,7 +57,7 @@ spec:
         - name: BEYLA_KUBE_METADATA_ENABLE
           value: "true"
         - name: OTEL_SERVICE_NAME
-          value: "frontendbeyla-cluster"
+          value: "frontendbeyla-cluster" #this is the one appearing in grafana cloud as "service"
         - name: OTEL_EXPORTER_OTLP_HEADERS
           valueFrom:
             secretKeyRef:
