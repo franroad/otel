@@ -1,0 +1,79 @@
+#Copyright 2019 Google LLC
+#Licensed under the Apache License, Version 2.0 (the "License");
+#you may not use this file except in compliance with the License.
+#You may obtain a copy of the License at
+#https://www.apache.org/licenses/LICENSE-2.0
+#Unless required by applicable law or agreed to in writing, software
+#distributed under the License is distributed on an "AS IS" BASIS,
+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#See the License for the specific language governing permissions and
+#limitations under the License.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app-beyla-trace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-app-beyla
+  template:
+    metadata:
+      labels:
+        app: backend-app-beyla
+    spec:
+      serviceAccountName: beyla-sa
+      shareProcessNamespace: true
+      containers:
+      - name: backend-app-beyla-container
+        image: http-out:2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DESTINATION_URL
+          value: "https://www.google.com"
+        - name: PORT
+          value: "8080"
+        - name: OTEL_SERVICE_NAME
+          value: "backend-application-beyla"
+      - name: beyla
+        image: grafana/beyla:latest
+        securityContext:
+          runAsUser: 0
+          capabilities:
+            add:
+              - SYS_ADMIN
+              - SYS_RESOURCE
+              - CAP_DAC_READ_SEARCH
+              - CAP_SYS_PTRACE
+              - CAP_SYS_RESOURCE
+              - CAP_PERFMON
+              - CAP_BPF
+              - CAP_CHECKPOINT_RESTORE
+        env:
+        - name: BEYLA_SERVICE_NAME
+          value: "backend-app-beyla-container"
+        - name: BEYLA_OPEN_PORT
+          value: "8080"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: grafana-credentials
+              key: otlp-endpoint
+        - name: BEYLA_KUBE_METADATA_ENABLE
+          value: "true"
+        - name: OTEL_SERVICE_NAME
+          value: "backend-cluster"
+        - name: OTEL_EXPORTER_OTLP_HEADERS
+          valueFrom:
+            secretKeyRef:
+              name: grafana-credentials
+              key: otlp-headers
+      nodeSelector:
+        kubernetes.io/arch: arm64
+
+      
+      
+    
