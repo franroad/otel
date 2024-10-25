@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      serviceAccountName: otel-collector-sa  # Use the service account for permissions
+      containers:
+      - name: otel-collector
+        image: otel/opentelemetry-collector-contrib:latest  # Image for the OpenTelemetry Collector
+        args: ["--config=/etc/otelcol/config.yaml"]  # Configuration file for the collector (--config command specific to this image)
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: google-service-account  # Secret containing Google service account key
+              key: service-account-key.json  # Key in the secret
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/otelcol  # Mount the ConfigMap to this path
+      volumes:
+      - name: config-volume
+        configMap:
+          name: otel-collector-config  # ConfigMap for the collector configuration

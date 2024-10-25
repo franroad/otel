@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-app
+  template:
+    metadata:
+      labels:
+        app: backend-app
+    spec:
+      containers:
+      - name: backend-app-container
+        image: europe-southwest1-docker.pkg.dev/afb-monitoring-test/distributed-tracing-docker-repo/goapp:general
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DESTINATION_URL
+          value: "https://www.google.com"
+        - name: PORT
+          value: "8080"
+      
+
+      
+      
+    
