@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetrygen
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemetrygen
+  template:
+    metadata:
+      labels:
+        app: telemetrygen
+    spec:
+      containers:
+      - name: telemetrygen
+        image: "ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.105.0"
+        args: ["traces", "--otlp-insecure", "--rate=3", "--duration=5m", "--otlp-endpoint=$(OTEL_EXPORTER_OTLP_TRACES_ENDPOINT)"]
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "collector-service.monitoring.svc.cluster.local:4317"
+        # - name: OTEL_RESOURCE_ATTRIBUTES
+        #   value: "service.name=telemetrygen,service.namespace=monitoring"

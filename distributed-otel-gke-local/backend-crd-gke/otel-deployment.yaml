@@ -13,21 +13,33 @@ spec:
       labels:
         app: otel-collector
     spec:
-      serviceAccountName: otel-collector-sa  # Use the service account for permissions
+      serviceAccountName: otel-sa  # Use the service account for permissions
       containers:
       - name: otel-collector
-        image: otel/opentelemetry-collector-contrib:latest  # Image for the OpenTelemetry Collector
-        args: ["--config=/etc/otelcol/config.yaml"]  # Configuration file for the collector (--config command specific to this image)
+        image: otel/opentelemetry-collector-contrib:0.106.0  # Image for the OpenTelemetry Collector
+        args: ["--config=/etc/otelcol/otel-config.yaml"]  # Configuration file for the collector (--config command specific to this image), referencing the configuration in configmap
+        ports:
+         - name: otlp-grpc
+           containerPort: 4317
+           protocol: TCP
+          
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          valueFrom:
-            secretKeyRef:
-              name: google-service-account  # Secret containing Google service account key
-              key: service-account-key.json  # Key in the secret
+        # - name: GOOGLE_APPLICATION_CREDENTIALS
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: gcp-sa  # Secret containing Google service account key
+        #       key: trace-sa.json  # Key in the secret
+          - name: GOOGLE_APPLICATION_CREDENTIALS 
+            value: "/etc/otelcol/google/trace-sa.json"
         volumeMounts:
         - name: config-volume
           mountPath: /etc/otelcol  # Mount the ConfigMap to this path
+        - name: gcp-creds
+          mountPath: /etc/otelcol/google          
       volumes:
       - name: config-volume
         configMap:
           name: otel-collector-config  # ConfigMap for the collector configuration
+      - name: gcp-creds
+        secret:
+          secretName: gcp-sa
