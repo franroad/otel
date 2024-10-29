@@ -22,6 +22,9 @@ spec:
          - name: otlp-grpc
            containerPort: 4317
            protocol: TCP
+         - name: otlp-http
+           containerPort: 4318
+           protocol: TCP
           
         env:
         # - name: GOOGLE_APPLICATION_CREDENTIALS
@@ -39,7 +42,7 @@ spec:
       volumes:
       - name: config-volume
         configMap:
-          name: otel-collector-config  # ConfigMap for the collector configuration
+          name: otel-collector-config  # ConfigMap name for the collector configuration
       - name: gcp-creds
         secret:
           secretName: gcp-sa

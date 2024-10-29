@@ -20,8 +20,12 @@ spec:
         ports:
         - containerPort: 8080
         env:
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://collector-service:4317"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://collector-service.monitoring.svc.cluster.local:4318/v1/traces" # is using http protocol at port 4318
+        # - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+        #   value: "collector-service.monitoring.svc.cluster.local:4317" # is using grpc protocol at port 4317
+        # - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        #   value: "http://collector-service:4317"
         - name: OTEL_TRACES_EXPORTER
           value: "otlp"
         - name: DESTINATION_URL
