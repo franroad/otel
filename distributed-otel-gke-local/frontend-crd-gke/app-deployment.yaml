@@ -1,28 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-app
+  name: frontend-app
   namespace: monitoring
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend-app
+      app: frontend-app
   template:
     metadata:
       labels:
-        app: backend-app
+        app: frontend-app
     spec:
       containers:
-      - name: backend-app-container
-        image: europe-southwest1-docker.pkg.dev/afb-monitoring-test/distributed-tracing-docker-repo/goapp:general
+      - name: frontend-app-container
+        image: europe-southwest1-docker.pkg.dev/afb-backend-pre/afb-registry/gohandler:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         env:
-        
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "deployment.type=backend" #this attribute is displayed in cloud trace and can be filtered
+          value: "deployment.type=frontend" #this attribute is displayed in cloud trace and can be filtered
+        - name: HANDLER_NAME
+          value: "front-server"
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
           value: "http://collector-service.monitoring.svc.cluster.local:4318/v1/traces" # is using http protocol at port 4318
         # - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
@@ -32,9 +33,9 @@ spec:
         - name: OTEL_TRACES_EXPORTER
           value: "otlp"
         - name: DESTINATION_URL
-          value: "https://www.google.com"
+          value: "http://34.175.168.164:80"
         - name: PORT
-          value: "8080"
+          value: "8081"
       
 
       
