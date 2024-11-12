@@ -17,7 +17,8 @@ spec:
       containers:
       - name: otel-collector
         image: otel/opentelemetry-collector-contrib:0.106.0  # Image for the OpenTelemetry Collector
-        args: ["--config=/etc/otelcol/otel-config.yaml"]  # Configuration file for the collector (--config command specific to this image), referencing the configuration.yaml (data section) in configmap
+        args: ["--config=/etc/otelcol/otel-config.yaml"]  # Configuration file for the collector (--config command specific to this image), referencing the configuration.yaml (data section) in configmap <mountPath>/<configMapFile>
+
         ports:
          - name: otlp-grpc
            containerPort: 4317

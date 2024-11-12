@@ -1,0 +1,28 @@
+---
+region: eu-west-1
+metrics:
+- aws_dimensions:
+  - DBInstanceIdentifier
+  aws_metric_name: DatabaseConnections
+  aws_namespace: AWS/RDS
+  aws_statistics:
+  - Maximum
+- aws_dimensions:
+  - DBInstanceIdentifier
+  aws_metric_name: FreeStorageSpace
+  aws_namespace: AWS/RDS
+  aws_statistics:
+  - Average
+- aws_dimensions:
+  - DBInstanceIdentifier
+  aws_metric_name: FreeableMemory
+  aws_namespace: AWS/RDS
+  aws_statistics:
+  - Average
+- aws_dimensions:
+  - DBInstanceIdentifier
+  aws_metric_name: CPUUtilization
+  aws_namespace: AWS/RDS
+  aws_statistics:
+  - Average
+  

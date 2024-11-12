@@ -1,0 +1,46 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        max_recv_msg_size_mib: 10
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'cloudwatch-exporter'
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['127.0.0.1:9106'] #the cloud watch exporter exposes the metrics there
+
+processors:
+  resource:
+    attributes:
+    - key: "project_id"
+      value: "afb-monitoring-test"
+      action: upsert
+    - key: "location"
+      #it needs to be a GCP or AWS location such as us-east1 or aws:us-east-1
+      value: "europe-southwest1" 
+      action: upsert
+  batch:
+    send_batch_size: 100
+    send_batch_max_size: 1000
+
+exporters:
+  debug:
+    verbosity: detailed
+
+  # otlp:
+  #   endpoint: opentelemetry-collector-1:4317
+  googlemanagedprometheus:
+    project: "afb-monitoring-test"
+
+service:
+  telemetry:
+    logs:
+      level: "debug"
+  pipelines:
+    metrics:
+      receivers: [otlp,prometheus]
+      processors: [batch,resource]
+      exporters: [googlemanagedprometheus]
