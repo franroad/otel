@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config-logs # new configmap name
+  namespace: monitoring
+data:
+  otel-config-logs.yaml: | # new configmap key
+    # Defining the receivers
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317  # Default endpoint for gRPC is port 4317 (localhost:4317)
+          http:
+            endpoint: 0.0.0.0:4318  # Default endpoint for HTTP is port 4318 (localhost:4318)
+    # Defining the exporters
+    exporters:
+      googlecloud:
+        project: afb-monitoring-test
+        log:
+          default_log_name: opentelemetry.io/collector-exported-log
+    # Defining the processors
+    processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 65
+        spike_limit_percentage: 20
+      batch: 
+      resourcedetection:
+        detectors: [gcp]
+        timeout: 10s
+    # Enabling the receivers and exporters defined above
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]  # Listening on default ports 4317 (gRPC) and 4318 (HTTP)
+          processors: [memory_limiter, batch]
+          exporters: [googlecloud]
+        logs:
+          receivers: [otlp]  # Listening on default ports 4317 (gRPC) and 4318 (HTTP)
+          processors: [memory_limiter, batch]
+          exporters: [googlecloud]

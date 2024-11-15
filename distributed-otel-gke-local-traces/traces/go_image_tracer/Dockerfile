@@ -9,27 +9,13 @@
 #See the License for the specific language governing permissions and
 #limitations under the License.
 
-# Use an official Go runtime as a parent image
-FROM golang:1.23.2 as builder
+FROM golang:1.21.0 as builder
 WORKDIR /crud
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /http-app
 
-# Use a distroless image for the final container
 FROM gcr.io/distroless/base-debian11
 WORKDIR /
-
-# Copy the built binary from the builder stage
 COPY --from=builder /http-app /http-app
-
-# Copy the service account file into the container
-COPY service-account-file.json /app/service-account-file.json
-
-# Set environment variables
-ENV GOOGLE_APPLICATION_CREDENTIALS /app/service-account-file.json
-
-# Set a non-root user for security
 USER nonroot:nonroot
-
-# Run the Go app
 CMD ["/http-app"]

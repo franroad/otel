@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-app
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-app
+  template:
+    metadata:
+      labels:
+        app: frontend-app
+    spec:
+      containers:
+      - name: frontend-app-container
+        image: europe-southwest1-docker.pkg.dev/afb-backend-pre/afb-registry/goapp:traces-logs
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+        env:
+        - name: HANDLER_NAME
+          value: "front-server"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://collector-logs-service.monitoring.svc.cluster.local:4318/v1/traces" # add the cluster ip service name
+        - name: OTEL_TRACES_EXPORTER
+          value: "otlp"
+        - name: DESTINATION_URL
+          value: "http://34.175.168.164:80"
+        - name: PORT
+          value: "8081"
+        - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+          value: "http://collector-logs-service.monitoring.svc.cluster.local:4318/v1/logs" # Updated to ClusterIP service
