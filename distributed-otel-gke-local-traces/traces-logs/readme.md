@@ -6,6 +6,8 @@ This configuration is intended for **centralizing** the Traces in **Cloud Trace*
 
 2.- Then, thanks to the instrumentation the traces are fowarded to the otel collector through a cluster ip service and then the **collector** forward the infor to the specified gcp projects in its's configuration using the SA specified (creating a secret).
 
+3. - In this example only *one* service account should be used, should be created in the project that is centralizing the traces. 
+
 ## We achieve the following:
 
 * Correlate logs with traces

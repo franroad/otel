@@ -6,6 +6,8 @@ This configuration is intended for each cluster located in different projects to
 
 2.- Then, thanks to the instrumentation the traces are fowarded to the otel collector throgught a cluster ip service and then the **collector** forward the infor to the specified gcp projects in its's configuration (otel-config-logs.yaml) using the SA specified (creating a secret).
 
+3. - In this scenario *two* services accoounts should be created one fo each project that is recieving the traces.
+
 ## We achieve the following:
 
 * Correlate logs with traces
