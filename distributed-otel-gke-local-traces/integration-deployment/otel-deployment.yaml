@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector-logs # New deployment name
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-collector-logs
+  template:
+    metadata:
+      labels:
+        app: otel-collector-logs
+    spec:
+      #serviceAccountName: otel-sa  # Use the service account for permissions (commented because not using for sending traces)
+      containers:
+      - name: otel-collector
+        image: otel/opentelemetry-collector-contrib:0.106.0  # Image for the OpenTelemetry Collector
+        args: ["--config=/etc/otelcol/otel-config.yaml"]  # Referencing the new ConfigMap key (indise the configmap file)
+        ports:
+         - name: otlp-grpc
+           containerPort: 4317
+           protocol: TCP
+         - name: otlp-http
+           containerPort: 4318
+           protocol: TCP
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS 
+            value: "/etc/otelcol/google/traces-integration.json"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/otelcol  # Mount the new ConfigMap to this path
+        - name: gcp-creds
+          mountPath: /etc/otelcol/google          
+      volumes:
+      - name: config-volume
+        configMap:
+          name: otel-collector-config-logs  # Referencing the new ConfigMap name
+      - name: gcp-creds
+        secret:
+          secretName: gcp-service-account-key  # Secret name for the GCP service account credentials

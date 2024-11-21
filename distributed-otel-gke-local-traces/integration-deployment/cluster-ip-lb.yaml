@@ -1,0 +1,36 @@
+#This is the configuration for the cluster ip service for the otel colelctor be accessible inside the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: collector-logs-service #updated for the new otel-logs deployment
+  namespace: monitoring
+spec:
+  selector:
+    app: otel-collector-logs #updated for the new otel-logs deployment 
+  ports:
+    - name: otel-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+      protocol: TCP
+
+---
+
+#This is the extenal lb for exposing the app 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-load-balancer
+  namespace: monitoring
+spec:
+  type: LoadBalancer
+  selector:
+    app: backend-app
+  ports:
+    - protocol: TCP
+      port: 80        # Port that the load balancer will listen on
+      targetPort: 8080  # Port that the backend pods are listening on

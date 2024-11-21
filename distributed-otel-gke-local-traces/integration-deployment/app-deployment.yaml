@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-app
+  template:
+    metadata:
+      labels:
+        app: backend-app
+    spec:
+      containers:
+      - name: backend-app-container
+        image: europe-southwest1-docker.pkg.dev/afb-aws-integration-test/otel-go-image/otellogs:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: HANDLER_NAME
+          value: "integration-front" #aparece en la URL de Cloud Trace  instrumentado con La APP
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "project.name=afb-integration-test" #Aparece en Cloud Trace
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "http://collector-logs-service.monitoring.svc.cluster.local:4318/v1/traces" #fowarding to the ClusterIP service
+        - name: OTEL_TRACES_EXPORTER
+          value: "otlp"
+        - name: DESTINATION_URL
+          value: "http://34.175.141.132:80"
+        - name: PORT
+          value: "8080"
+        # - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+        #   value: "http://collector-logs-service.monitoring.svc.cluster.local:4318/v1/logs" # Updated to ClusterIP service
+        - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+          value: "http://collector-logs-service.monitoring.svc.cluster.local:4317"
