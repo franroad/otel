@@ -15,3 +15,9 @@
 ## DIAGRAM
 
 
+## Procedure:
+
+[Follow guide](https://github.com/GoogleCloudPlatform/opentelemetry-operator-sample/tree/main)
+
+[cloud trace example](https://github.com/GoogleCloudPlatform/opentelemetry-operator-sample/tree/main/recipes/cloud-trace)
+

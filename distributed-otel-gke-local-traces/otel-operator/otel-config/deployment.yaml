@@ -1,9 +1,10 @@
 apiVersion: opentelemetry.io/v1alpha1
 kind: OpenTelemetryCollector
 metadata:
-  name: daemon-test
+  name: otel
+  namespace: monitoring 
 spec:
-  mode: daemonset
+  image: otel/opentelemetry-collector-contrib:0.106.0
   config: |
     receivers:
       otlp:
@@ -12,31 +13,27 @@ spec:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+    processors:
+
     exporters:
       googlecloud:
-        project: afb-aws-integration-test
-    processors:
-      memory_limiter:
-        check_interval: 1s
-        limit_percentage: 65
-        spike_limit_percentage: 20
-      batch: {}
-      resourcedetection:
-        detectors: [gcp]
-        timeout: 10s
+        project: afb-monitoring-test
+      debug:
+        verbosity: detailed
+
     service:
       pipelines:
         traces:
           receivers: [otlp]
-          processors: [memory_limiter, batch, resourcedetection]
-          exporters: [googlecloud]
+          processors: []
+          exporters: [debug, googlecloud]
   volumeMounts:
   - name: gcp-cred
     mountPath: /etc/otelcol/google
   volumes:
   - name: gcp-cred
     secret:
-      secretName: secret-name
+      secretName: gcp-sa
   env:
   - name: GOOGLE_APPLICATION_CREDENTIALS
     value: /etc/otelcol/google/key1.json
