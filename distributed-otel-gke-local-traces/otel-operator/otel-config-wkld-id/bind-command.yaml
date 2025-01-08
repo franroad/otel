@@ -1,0 +1,15 @@
+
+gcloud iam service-accounts add-iam-policy-binding \
+  tracesbackend-pre@afb-backend-pre.iam.gserviceaccount.com \ # <gcp-service-account> 
+  --role=roles/iam.workloadIdentityUser \
+  --member="serviceAccount:afb-backend-pre.svc.id.goog[monitoring/otel-collector]" # "serviceAccount:<project>.svc.id.goog[<namespace>/<k8s-service-account>]"
+
+---
+
+kubectl annotate opentelemetrycollector otel \ #otel = collector deployment name
+    --namespace $COLLECTOR_NAMESPACE \ #<monitoring>
+    iam.gke.io/gcp-service-account=tracesbackend-pre@afb-backend-pre.iam.gserviceaccount.com
+
+    kubectl annotate opentelemetrycollector otel \
+    --namespace monitoring \
+    iam.gke.io/gcp-service-account=tracesbackend-pre@afb-backend-pre.iam.gserviceaccount.com
