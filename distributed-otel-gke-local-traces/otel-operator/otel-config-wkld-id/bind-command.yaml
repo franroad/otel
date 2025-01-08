@@ -6,9 +6,9 @@ gcloud iam service-accounts add-iam-policy-binding \
 
 ---
 
-kubectl annotate opentelemetrycollector otel \ #otel = collector deployment name
+kubectl annotate opentelemetrycollector <collector-deployment-name> \ #otel = collector deployment name
     --namespace $COLLECTOR_NAMESPACE \ #<monitoring>
-    iam.gke.io/gcp-service-account=tracesbackend-pre@afb-backend-pre.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account=<gcp-sa>
 
     kubectl annotate opentelemetrycollector otel \
     --namespace monitoring \
