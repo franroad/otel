@@ -103,14 +103,3 @@ kubectl annotate opentelemetrycollector otel \
     --namespace $COLLECTOR_NAMESPACE \
     iam.gke.io/gcp-service-account=<gcp-sa>
 ```
-Additionally, in case you have deployments that currently uses sa, you can  update the  sa  to use an sa and allow them to use the gcp sa’s:
-
-gcloud iam service-accounts add-iam-policy-binding \
-  PROJECT_NUMBER-compute@developer.gserviceaccount.com \
-  --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:<project>.svc.id.goog[<namespace>/<k8s-service-account>]"
-
-gcloud iam service-accounts add-iam-policy-binding \
-  788959310267-compute@developer.gserviceaccount.com \
-  --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:afb-backend-pre.svc.id.goog[monitoring/monitoring-sa]”
