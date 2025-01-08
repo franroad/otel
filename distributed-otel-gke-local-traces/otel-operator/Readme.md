@@ -20,6 +20,9 @@
 
 - The otel-confgi will be configured to forward the traces to a different project. This approach is useful for centralizing the traces in one place.
 
+# TO-DO: 
+- Describe the procedure and add the wkld identity part instead of the sa 
+
 ## DIAGRAM
 
 
