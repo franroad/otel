@@ -1,7 +1,7 @@
 # OTEL OPERATOR
 
 **Purpose:**
-- The intention of this repo is to configure a daemon set using the otel [collector operator](https://github.com/open-telemetry/opentelemetry-operator) 
+- The intention of this repo is to configure a daemon set using the otel [collector operator](https://github.com/open-telemetry/opentelemetry-operator). Using two options either using the WKLD identity for GKE clusters and SA when on-premises or other clouds, for fowarding the signals into GCP.
 
 **Baseline:**
 - An instrumented app in go  will be used as example.
@@ -48,6 +48,7 @@ kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releas
 ```
 3 - Deploy the app 
 4 - create the SA’s the GCP IAM and the  k8’s one the k’8s sa must be created in the ns that will host the collector  deployment
+``kubectl create serviceaccount otel-collector``
 5- Enable workload identity 
 	HABILITAR  EL WORKLOAD IDENTIY A NIVEL DE CLUSTER Y A NIVEL DE NODOS 
     WARNING:: Modifying the node pool immediately enables Workload Identity Federation for GKE for any workloads running in the node pool. This prevents the workloads from using the service account that your nodes use and might result in disruptions. 
@@ -103,3 +104,5 @@ kubectl annotate opentelemetrycollector otel \
     --namespace $COLLECTOR_NAMESPACE \
     iam.gke.io/gcp-service-account=<gcp-sa>
 ```
+
+# Outside GCP / ONPREMISES WKLD IDENTITY
